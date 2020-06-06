@@ -12,10 +12,7 @@ Gamemaster::Gamemaster():
 Gamemaster::~Gamemaster() 
 {
 }
-/// PRIVATE FUNCTIONS
-void Gamemaster::checkFields()
-{
-}
+/// ***** CREATING PUZZLE ***** ///
 void Gamemaster::swapRows()
 {
     int block = rand() % 3 * 3;
@@ -118,22 +115,96 @@ char Gamemaster::good(int i, int j)
 }
 void Gamemaster::eraseCells()//levels level)
 {
-    for (unsigned int i = 0; i < 9; i++)
+    int erased = 0;
+    int limit = 0;
+    while (erased < 31 || 1000 < limit++)
+    {
+        int i = rand() % 9;
+        int j = rand() % 9;
+        if (_fields[i][j] && good(i, j) != 0)
+        {
+            _fields[i][j] = 0;
+            erased++;
+        }
+    }
+   /* for (unsigned int i = 0; i < 9; i++)
         for (unsigned int j = 0; j < 9; j++)
             if (good(i, j) != 0)
-                _fields[i][j] = 0;
+                _fields[i][j] = 0;*/
 
 }
 
-/// PUBLIC FUNCTIONS
+ /// ***** CHECKING ***** ///
+// Check if the created board is equal with the solution
+// Returning true if the player solved the game
+// Setting the status to 'winner'
+bool Gamemaster::checkForWin()
+{
+    bool win = true;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (_completedFields[i][j] != _fields[i][j]) {
+                win = false;
+                break;
+            }
+        }
+    }
+    _status = winner;
+    return win;
+}
+// Check if every field has a value, so whether the board is full or not
+// Returning true if the board is full.
+// Setting the game status to 'fullboard'
+bool Gamemaster::checkFullBoard() {
+    bool full = true;
+    for (auto row : _fields)
+        for (auto f : row)
+            if (f == 0) {
+                full = false;
+                break;
+            }
+    _status = fullBoard;
+    return full;
+
+}
+// Get every field's value that is displayed and compare it to every value the master have
+// if there is two value that different the function returning true
+bool Gamemaster::updateField(const std::vector<std::vector<int>>& values)
+{
+    bool change = false;
+    for (int i = 0; i < 9; i++)
+        for (int j = 0; j < 9; j++)
+            if (values[i][j] != _fields[i][j]) {
+                _fields[i][j] = values[i][j];
+                change = true;
+                show(); // TÖRLÉS
+            }
+
+    return change;
+}
+
+/// ***** PUBLIC ***** ///
+void Gamemaster::check(const std::vector<std::vector<int>> & values)
+{
+    if (updateField(values)) {
+        if (checkFullBoard()) {
+            
+            if (checkForWin()) {
+                std::cout << "hello";
+                _status = winner;
+            }
+        }
+    }
+}
+
 void Gamemaster::generateFields()
 {
-	for (unsigned int i = 0; i < 9; i++)
-	{
-		_completedFields.push_back({});
-		for (unsigned int j = 0; j < 9; j++)
-			_completedFields[i].push_back((i * 3 + j + (int)floor(i / 3)) % 9 + 1);
-	}
+    for (unsigned int i = 0; i < 9; i++)
+    {
+        _completedFields.push_back({});
+        for (unsigned int j = 0; j < 9; j++)
+            _completedFields[i].push_back((i * 3 + j + (int)floor(i / 3)) % 9 + 1);
+    }
 
     shuffle();
 
@@ -142,6 +213,13 @@ void Gamemaster::generateFields()
     eraseCells();
 
     _erasedFields = _fields;
+    for (auto row : _completedFields) {
+        for (auto f : row) {
+            std::cout << f << " ";
+        }
+        std::cout << '\n';
+    }
+    std::cout << '\n';
 }
 void Gamemaster::restartGame()
 {
@@ -149,18 +227,14 @@ void Gamemaster::restartGame()
 }
 void Gamemaster::show() {
    
-    for (auto row : _completedFields) {
-        for (auto f : row) {
-            std::cout << f << " ";
-        }
-        std::cout << '\n';
-    } std::cout << '\n';
-    for (auto row : _fields) {
+    
+    /*for (auto row : _fields) {
         for (auto f : row) {
             std::cout << f << " ";
         }
         std::cout << '\n';
     }
+    std::cout << '\n';*/
 }
 
 gameStatus Gamemaster::getGameStatus() const

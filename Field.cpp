@@ -47,12 +47,18 @@ Field::Field(sf::Font& font, Game* parent,sf::Vector2f position, sf::Vector2f si
 Field::~Field() {}
 
 /// GETTER / SETTER
-void Field::setValue(int value) {
+void Field::setValue(int value)
+{
 	_value = value;
 	updateText();
 }
-
 int Field::getValue() const { return _value; }
+void Field::setFieldState(fieldState state){_fState = state;}
+bool Field::isFocusable() const
+{
+	if (_fState == inactive) return false;
+	return true;
+}
 
 /// HANDLE FUNCTIONS
 void Field::handle( sf::Event& ev,widgetState state) {

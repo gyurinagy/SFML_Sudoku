@@ -4,16 +4,18 @@
 #include "Field.h"
 #include "Gamemaster.h"
 #include "vector"
-#include <stdlib.h>
-#include <time.h>
+
+
 
 class Sudoku : public Game
 {
 	Gamemaster* gmaster;
 	std::vector<std::vector<Field*> > _fields;
 
+	std::vector<std::vector<int > > getFieldValues();
+
 	void initializeVariables();
-	void initWindow();
+	void initializeWindow();
 	void refreshGame();
 
 public:
